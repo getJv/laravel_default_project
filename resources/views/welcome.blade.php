@@ -18,7 +18,7 @@
         <app></app>
     </div>
     <script src="{{ (env('APP_ENV') === 'development') ? mix('js/app.js') : asset('js/app.js') }}"></script>
-    {{-- <script src="{{ mix('js/app.js') }}"></script> --}}
+
 </body>
 
 </html>

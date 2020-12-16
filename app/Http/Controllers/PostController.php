@@ -5,8 +5,10 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 
 use App\Models\Post;
+use Carbon\Carbon;
 use App\Http\Resources\Post as PostResource;
 use App\Http\Resources\PostCollection;
+use Illuminate\Support\Facades\Redis;
 
 class PostController extends Controller
 {
@@ -16,14 +18,24 @@ class PostController extends Controller
             'title'     => 'required',
             'body'      => '',
         ]);
+
         $post = Post::create($data);
+
+
+
         return new PostResource($post);
     }
     public function index()
     {
+        $cache_key = 'posts_all';
+        $posts = Redis::get($cache_key);
 
+        if (is_null($posts)) {
+            $posts = new PostCollection(Post::all());
+            Redis::set($cache_key, $posts->toJson());
+        }
 
-        return new PostCollection(Post::all());
+        return $posts;
     }
     public function show(Post $post)
     {
